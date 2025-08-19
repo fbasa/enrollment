@@ -104,7 +104,7 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
         }
         else
         {
-            // No Redis multiplexer → no strong in-flight protection.
+            // No Redis multiplexer - no strong in-flight protection.
             // We still do cache-aside replay after completion.
             var response = await next();
             await cache.SetStringAsync(resultKey,

@@ -86,10 +86,6 @@ builder.Services.AddScoped<IPaymentsRepository, PaymentsRepository>();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<Program>());
 
-//// FluentValidation auto + discovery (ensure packages are referenced)
-//builder.Services.AddFluentValidationAutoValidation();
-//builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
 // MediatR validation pipeline
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
@@ -97,7 +93,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCacheBeh
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdempotencyBehavior<,>));
 
 // 1) Options + accessor
-builder.Services.Configure<IdempotencyOptions>(builder.Configuration.GetSection("Idempotency"));
+builder.Services.Configure<IdempotencyOptions>(config.GetSection("Idempotency"));
 builder.Services.AddSingleton<IIdempotencyKeyAccessor, HttpIdempotencyKeyAccessor>();
 
 // Ambient DB session (scoped per request)
@@ -138,22 +134,24 @@ builder.Services.AddSingleton<IAuthorizationHandler, CapacityOverrideHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, PrereqWaiverHandler>();
 
 // Whitelist all cross domain urls here, unregistered Domain will be not allowed to use this API
-var corsOrigins = builder.Configuration.GetSection("CORS:Origins").Get<string[]>().ToArray();
-builder.Services.AddCors(cors =>
+var corsOrigins = config.GetSection("CORS:Origins").Get<string[]>()?.ToArray();
+if (corsOrigins?.Length > 0)
 {
-    cors.AddPolicy("corspolicy", (builder) =>
+    builder.Services.AddCors(cors =>
     {
-        builder.WithOrigins(corsOrigins)
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials()    //Allow SignalR endpoint to negotiate
-        .WithExposedHeaders("Content-Disposition", "Content-Type");
+        cors.AddPolicy("corspolicy", (builder) =>
+        {
+            builder.WithOrigins(corsOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()    //Allow SignalR endpoint to negotiate
+            .WithExposedHeaders("Content-Disposition", "Content-Type");
+        });
     });
-});
-
+}
 
 // Optional distributed cache (Redis): set ConnectionStrings:Redis to enable
-var redisCs = builder.Configuration.GetConnectionString("Redis");
+var redisCs = config.GetConnectionString("Redis");
 if (!string.IsNullOrWhiteSpace(redisCs))
 {
     builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisCs));
@@ -171,7 +169,7 @@ else
 
 // Output cache
 // Register all policies from a single place
-builder.Services.AddOutputCachingWithPolicies(builder.Configuration);
+builder.Services.AddOutputCachingWithPolicies(config);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
