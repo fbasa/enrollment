@@ -23,6 +23,7 @@ using UniEnroll.Api.Observability;
 using UniEnroll.Api.RateLimiting;
 using UniEnroll.Api.Security;
 using UniEnroll.Api.Versioning;
+using UniEnroll.Api.Realtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -133,6 +134,13 @@ builder.Services.AddAuthorization(o =>
 builder.Services.AddSingleton<IAuthorizationHandler, CapacityOverrideHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, PrereqWaiverHandler>();
 
+// SignalR configuration
+builder.Services.AddSignalR(o =>
+{
+    o.EnableDetailedErrors = true;
+    o.MaximumReceiveMessageSize = 64 * 1024;
+});
+
 // Whitelist all cross domain urls here, unregistered Domain will be not allowed to use this API
 var corsOrigins = config.GetSection("CORS:Origins").Get<string[]>()?.ToArray();
 if (corsOrigins?.Length > 0)
@@ -189,6 +197,9 @@ app.UseSwaggerUI(c =>
 
 app.UseCors("corspolicy");
 
+// map hub
+app.MapHub<EnrollmentHub>("/hubs/enrollments")
+   .RequireAuthorization(); // hub requires JWT like your API
 
 //Serilog
 app.UseSerilogRequestLogging(opts =>

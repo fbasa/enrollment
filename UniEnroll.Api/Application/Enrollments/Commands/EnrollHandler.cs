@@ -4,6 +4,7 @@ using UniEnroll.Api.Common;
 using UniEnroll.Api.Common.Idempotency;
 using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Api.Realtime;
 using UniEnroll.Api.Validation;
 
 namespace UniEnroll.Api.Application.Enrollments.Commands;
@@ -15,7 +16,7 @@ public sealed class EnrollCommandValidator : AbstractValidator<EnrollCommand>
     public EnrollCommandValidator() => RuleFor(x => x.Request).SetValidator(new EnrollRequestValidator());
 }
 
-public sealed class EnrollHandler(IEnrollmentsRepository repo) : IRequestHandler<EnrollCommand, EnrollResponse>
+public sealed class EnrollHandler(IEnrollmentsRepository repo, IMediator mediator) : IRequestHandler<EnrollCommand, EnrollResponse>
 {
     public async Task<EnrollResponse> Handle(EnrollCommand cmd, CancellationToken ct)
     {
@@ -33,6 +34,12 @@ public sealed class EnrollHandler(IEnrollmentsRepository repo) : IRequestHandler
         if (status is null) throw new ValidationException("Class full.");
 
         var id = await repo.CreateAsync(r.StudentId, r.OfferingId, status, ct);
+
+        //SignalR
+        //var evt = new EnrollmentEventDto(id, offeringId, termId, studentId, finalStatus, DateTime.UtcNow);
+        //var counts = await repo2(offeringId, ct); // returns OfferingSeatCountsDto
+        //await mediator.Publish(new EnrollmentCommitted(evt, counts), ct);
+
         return new EnrollResponse(id, status);
     }
 }

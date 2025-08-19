@@ -50,6 +50,9 @@ Entity ETags + 304 (network-level efficiency).
 ## Rate limiting: 
 Token/leaky-bucket (per-IP/tenant) caps abusive patterns on sensitive endpoints (auth/enrollments).
 
+## Real-time updates
+Real-time enrollment updates end-to-end with SignalR.
+
 ## Global Exception Handler 
 Consistent responses: always RFC 7807 with type, title, detail, status, instance, correlationId, traceId, and (when applicable) a per-field errors dictionary.Smart DB mapping: unique key - 409, deadlock/timeout - 503 (+ retry signal), login/db open issues properly classified.
 
