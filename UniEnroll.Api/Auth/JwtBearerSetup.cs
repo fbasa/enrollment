@@ -10,8 +10,8 @@ namespace UniEnroll.Api.Security;
 public static class JwtBearerSetup
 {
     /// <summary>
-    /// Adds JWT bearer auth. If Auth:Authority exists → OIDC mode.
-    /// Otherwise, if Auth:Dev:Enabled=true → local symmetric key mode.
+    /// Adds JWT bearer auth. If Auth:Authority exists - OIDC mode.
+    /// Otherwise, if Auth:Dev:Enabled=true - local symmetric key mode.
     /// </summary>
     public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration cfg)
     {
@@ -63,7 +63,7 @@ public static class JwtBearerSetup
                 }
                 else
                 {
-                    // No auth configured → accept no tokens
+                    // No auth configured - accept no tokens
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,

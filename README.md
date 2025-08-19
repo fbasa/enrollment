@@ -1,7 +1,7 @@
 # Notes
 
 ## Vertical slices with MediatR: 
-Keeps each feature’s commands/queries cohesive and testable; reduces cross-module coupling and aligns with “teachability” via focused files.
+Keeps each feature’s commands/queries cohesive and testable; reduces cross-module coupling and aligns via focused files.
 
 ## Dapper over EF Core: 
 Predictable SQL, minimal overhead, and first-class control of indexes/TVPs to meet performance goals and avoid N+1.
@@ -16,7 +16,7 @@ Prevents lost updates for offerings/enrollments; clients resolve 409s explicitly
 Balances concurrency with correctness; we lock the offering row only for short capacity calculations while readers remain non-blocking.
 
 ## Polly for DB resiliency: 
-Retries on transient SQL errors (e.g., failovers); centralized policy improves reliability without littering handlers.
+Retries on transient SQL errors (e.g., failovers), centralized policy improves reliability without littering handlers.
 
 ## JWT + role/policy auth: 
 Simple local identity or external IdP; policies enable business overrides (capacity/prereq waiver) with auditable reasons.
@@ -49,3 +49,6 @@ Entity ETags + 304 (network-level efficiency).
 
 ## Rate limiting: 
 Token/leaky-bucket (per-IP/tenant) caps abusive patterns on sensitive endpoints (auth/enrollments).
+
+## Global Exception Handler 
+Consistent responses: always RFC 7807 with type, title, detail, status, instance, correlationId, traceId, and (when applicable) a per-field errors dictionary.Smart DB mapping: unique key - 409, deadlock/timeout - 503 (+ retry signal), login/db open issues properly classified.
