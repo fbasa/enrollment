@@ -180,8 +180,8 @@ else
 }
 
 // Email messaging Queue using RabbitMQ + SendGrid
-builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
-builder.Services.Configure<SendGridOptions>(builder.Configuration.GetSection("SendGrid"));
+builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMq"));
+builder.Services.Configure<SendGridOptions>(config.GetSection("SendGrid"));
 
 // Register SendGrid client
 builder.Services.AddSingleton(sp =>
@@ -192,7 +192,7 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
 
 // Queue backend selection (unchanged)
-var useRabbit = !string.IsNullOrWhiteSpace(builder.Configuration["RabbitMq:HostName"]);
+var useRabbit = !string.IsNullOrWhiteSpace(config["RabbitMq:HostName"]);
 if (useRabbit)
 {
     builder.Services.AddSingleton<IEmailQueue, RabbitMqEmailQueue>();
@@ -200,7 +200,7 @@ if (useRabbit)
 else
 {
     // In-memory queue + worker for local dev
-    var channel = System.Threading.Channels.Channel.CreateUnbounded<EmailMessage>();
+    var channel = Channel.CreateUnbounded<EmailMessage>();
     builder.Services.AddSingleton(channel);
     builder.Services.AddSingleton<IEmailQueue, InMemoryEmailQueue>();
     builder.Services.AddSingleton<IEmailSender, DebugEmailSender>(); // swap with SMTP/SendGrid in prod
