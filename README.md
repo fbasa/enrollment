@@ -30,8 +30,8 @@ Stable, high-performance paging for large datasets with RFC 5988 Link headers fo
 ## OpenTelemetry + Serilog: 
 Standardized traces/metrics and structured logs; demo-friendly with Seq/Jaeger locally, OTLP-ready for Azure Monitor.
 
-##Feature-flagged Payments: 
-Cleanly optional without branching complexity; keeps core enrollment domain.
+## Feature-flagged domains: 
+Cleanly optional without branching complexity; keeps core enrollment domain simple.
 
 ## Idempotent POSTs (idempotency keys): 
 Safe retries from flaky networks/clients; vital for create-enrollment and payment operations.
