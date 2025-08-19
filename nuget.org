@@ -1,0 +1,6 @@
+<packageSourceMapping>
+  <packageSource key="nuget.org">
+    <package pattern="MediatR" />
+    <package pattern="MediatR.Extensions.Microsoft.DependencyInjection" />
+  </packageSource>
+</packageSourceMapping>

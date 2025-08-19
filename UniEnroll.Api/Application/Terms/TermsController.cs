@@ -1,0 +1,25 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using UniEnroll.Api.Application.Terms.Commands;
+using UniEnroll.Api.Application.Terms.Queries;
+using UniEnroll.Api.DTOs;
+
+namespace UniEnroll.Api.Application.Terms;
+
+[ApiController]
+[Route("api/v{version:apiVersion}/terms")]
+public sealed class TermsController(IMediator mediator) : ControllerBase
+{
+    [HttpGet]
+    [OutputCache(PolicyName = "terms-list")]
+    public async Task<ActionResult<IReadOnlyList<TermDto>>> Get(CancellationToken ct) 
+        => Ok(await mediator.Send(new ListTermsQuery(), ct));
+
+    [HttpPost]
+    public async Task<IResult> CreateAsync([FromBody] CreateTermRequest req, CancellationToken ct)
+    {
+        var id = await mediator.Send(new CreateOrUpdateTermCommand(req), ct);
+        return Results.Created($"/api/v1/terms/{id}", new { termId  = id });
+    }
+}
