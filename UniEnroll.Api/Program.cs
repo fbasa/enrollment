@@ -1,10 +1,17 @@
 using AutoMapper;
 using Dapper;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using SendGrid;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
 using System.Text;
+using System.Threading.Channels;
 using UniEnroll.Api.Application.Common;
 using UniEnroll.Api.Auth;
 using UniEnroll.Api.Caching;
@@ -15,15 +22,12 @@ using UniEnroll.Api.Infrastructure;
 using UniEnroll.Api.Infrastructure.Repositories;
 using UniEnroll.Api.Infrastructure.Transactions;
 using UniEnroll.Api.Mapping;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using UniEnroll.Api.Messaging;
 using UniEnroll.Api.Observability;
 using UniEnroll.Api.RateLimiting;
+using UniEnroll.Api.Realtime;
 using UniEnroll.Api.Security;
 using UniEnroll.Api.Versioning;
-using UniEnroll.Api.Realtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +86,7 @@ builder.Services.AddScoped<IOfferingsRepository, OfferingsRepository>();
 builder.Services.AddScoped<IEnrollmentsRepository, EnrollmentsRepository>();
 builder.Services.AddScoped<IReportsRepository, ReportsRepository>();
 builder.Services.AddScoped<IPaymentsRepository, PaymentsRepository>();
+builder.Services.AddSingleton<IEmailOutboxRepository, EmailOutboxRepository>();
 
 // MediatR + Validators + Mapping
 builder.Services.AddMediatR(cfg =>
@@ -173,6 +178,38 @@ else
 {
     builder.Services.AddMemoryCache();
 }
+
+// Email messaging Queue using RabbitMQ + SendGrid
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection("RabbitMq"));
+builder.Services.Configure<SendGridOptions>(builder.Configuration.GetSection("SendGrid"));
+
+// Register SendGrid client
+builder.Services.AddSingleton(sp =>
+{
+    var apiKey = sp.GetRequiredService<IOptions<SendGridOptions>>().Value.ApiKey;
+    return new SendGridClient(apiKey);
+});
+builder.Services.AddSingleton<IEmailSender, SendGridEmailSender>();
+
+// Queue backend selection (unchanged)
+var useRabbit = !string.IsNullOrWhiteSpace(builder.Configuration["RabbitMq:HostName"]);
+if (useRabbit)
+{
+    builder.Services.AddSingleton<IEmailQueue, RabbitMqEmailQueue>();
+}
+else
+{
+    // In-memory queue + worker for local dev
+    var channel = System.Threading.Channels.Channel.CreateUnbounded<EmailMessage>();
+    builder.Services.AddSingleton(channel);
+    builder.Services.AddSingleton<IEmailQueue, InMemoryEmailQueue>();
+    builder.Services.AddSingleton<IEmailSender, DebugEmailSender>(); // swap with SMTP/SendGrid in prod
+    builder.Services.AddHostedService<EmailChannelWorker>(); // this uses IEmailSender (SendGrid) now
+}
+
+// Outbox + dispatcher 
+builder.Services.AddHostedService<RabbitConsumer>();
+builder.Services.AddHostedService<OutboxDispatcher>();
 
 
 // Output cache

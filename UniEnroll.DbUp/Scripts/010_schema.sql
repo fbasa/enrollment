@@ -228,4 +228,24 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.EmailOutbox','U') IS NULL
+BEGIN
+  CREATE TABLE dbo.EmailOutbox(
+    outboxId           bigint IDENTITY(1,1) PRIMARY KEY,
+    toEmail            nvarchar(256) NOT NULL,
+    toName             nvarchar(128) NULL,
+    subject            nvarchar(256) NOT NULL,
+    bodyText           nvarchar(max) NULL,
+    bodyHtml           nvarchar(max) NULL,
+    meta               nvarchar(max) NULL, -- JSON (e.g., offeringId, studentId)
+    createdAtUtc       datetime2 NOT NULL CONSTRAINT DF_EmailOutbox_Created DEFAULT (SYSUTCDATETIME()),
+    status             varchar(32) NOT NULL CONSTRAINT DF_EmailOutbox_Status DEFAULT ('Pending'), -- Pending|Enqueued|Sent|Failed
+    attemptCount       int NOT NULL CONSTRAINT DF_EmailOutbox_Attempts DEFAULT 0,
+    lastError          nvarchar(1024) NULL,
+    rowversion         rowversion
+  );
+  CREATE INDEX IX_EmailOutbox_Status_Created ON dbo.EmailOutbox(status, createdAtUtc);
+END
+GO
+
 COMMIT;
