@@ -1,22 +1,24 @@
 using AutoMapper;
 using Dapper;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using StackExchange.Redis;
 using System.Text;
 using UniEnroll.Api.Application.Common;
 using UniEnroll.Api.Auth;
 using UniEnroll.Api.Caching;
 using UniEnroll.Api.Common;
+using UniEnroll.Api.Common.Idempotency;
 using UniEnroll.Api.Errors;
 using UniEnroll.Api.Infrastructure;
 using UniEnroll.Api.Infrastructure.Repositories;
 using UniEnroll.Api.Infrastructure.Transactions;
 using UniEnroll.Api.Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using UniEnroll.Api.Observability;
 using UniEnroll.Api.RateLimiting;
 using UniEnroll.Api.Security;
@@ -92,6 +94,11 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCacheBehavior<,>));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdempotencyBehavior<,>));
+
+// 1) Options + accessor
+builder.Services.Configure<IdempotencyOptions>(builder.Configuration.GetSection("Idempotency"));
+builder.Services.AddSingleton<IIdempotencyKeyAccessor, HttpIdempotencyKeyAccessor>();
 
 // Ambient DB session (scoped per request)
 builder.Services.AddScoped<IDbSession, DbSession>();
@@ -144,17 +151,23 @@ builder.Services.AddCors(cors =>
     });
 });
 
-// Caching
-builder.Services.AddMemoryCache();
 
 // Optional distributed cache (Redis): set ConnectionStrings:Redis to enable
 var redisCs = builder.Configuration.GetConnectionString("Redis");
 if (!string.IsNullOrWhiteSpace(redisCs))
+{
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisCs));
     builder.Services.AddStackExchangeRedisCache(o =>
     {
-        o.Configuration = redisCs;
-        o.InstanceName = "unienroll";
+        o.ConnectionMultiplexerFactory = async () => await ConnectionMultiplexer.ConnectAsync(redisCs);
+        o.InstanceName = "unienroll:";
     });
+}
+else
+{
+    builder.Services.AddMemoryCache();
+}
+
 
 // Output cache
 // Register all policies from a single place

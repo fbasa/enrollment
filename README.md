@@ -52,3 +52,11 @@ Token/leaky-bucket (per-IP/tenant) caps abusive patterns on sensitive endpoints 
 
 ## Global Exception Handler 
 Consistent responses: always RFC 7807 with type, title, detail, status, instance, correlationId, traceId, and (when applicable) a per-field errors dictionary.Smart DB mapping: unique key - 409, deadlock/timeout - 503 (+ retry signal), login/db open issues properly classified.
+
+Notes & guidance
+Safety: Idempotency should be used only for side-effecting commands where repeat submissions must not duplicate effects. Reads don’t need it.
+Locks: With a Redis multiplexer, concurrent duplicates are serialized (SET NX). Without it, duplicates may still both execute, but retries will replay the cached result—good enough for dev.
+TTL: Tune Idempotency:StoreTtl (e.g., 10–60 min) based on your client’s retry window.
+Key scope: We scope by method + path + user + key + requestHash. This avoids collisions across routes/users and prevents accidental replay with a different payload.
+Clients must send the header: X-Idempotency-Key: 8d5e0a6f-8a5a-4b04-a0a2-0c6b1c5f6f9a
+Errors: If a duplicate comes while the first is in flight, we wait briefly for the result; if still not available, we throw a 409-style exception (currently InvalidOperationException; you can replace with your ConflictException).

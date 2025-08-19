@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using UniEnroll.Api.Common;
+using UniEnroll.Api.Common.Idempotency;
 using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
 
 namespace UniEnroll.Api.Application.Payments.Commands;
 
-public record PayInvoiceCommand(long InvoiceId, PaymentRequest Request) : IRequest<Unit>, ITransactionalRequest;
+public record PayInvoiceCommand(long InvoiceId, PaymentRequest Request) : IRequest<Unit>, ITransactionalRequest, IIdempotentRequest;
 
 public sealed class PayInvoiceHandler(IPaymentsRepository repo)
     : IRequestHandler<PayInvoiceCommand, Unit>

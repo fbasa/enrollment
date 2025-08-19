@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 using MediatR;
 using UniEnroll.Api.Common;
+using UniEnroll.Api.Common.Idempotency;
 using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
 using UniEnroll.Api.Validation;
 
 namespace UniEnroll.Api.Application.Enrollments.Commands;
 
-public record EnrollCommand(EnrollRequest Request, long ActorUserId) : IRequest<EnrollResponse>, ITransactionalRequest;
+public record EnrollCommand(EnrollRequest Request, long ActorUserId) : IRequest<EnrollResponse>, ITransactionalRequest, IIdempotentRequest;
 
 public sealed class EnrollCommandValidator : AbstractValidator<EnrollCommand>
 {
