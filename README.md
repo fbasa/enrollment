@@ -1,4 +1,25 @@
-# Notes
+# Solution Layout
+```
+├─ /src
+│  ├─ UniEnroll.Domain/                    # Pure domain types (no deps)
+│  ├─ UniEnroll.Application/               # Use-cases, MediatR handlers, behaviors, validators, abstractions
+│  ├─           Abstractions/              # Ports: repo + services interfaces (referenced by Application)
+│  ├─ UniEnroll.Infrastructure/
+│  ├─           SqlServer/                 # Dapper repos, IDbConnectionFactory, UoW, type handlers, SQL helpers
+│  ├─           Caching/                   # Query cache behavior helpers, OutputCache policy reg, Redis wiring
+│  ├─           Security/                  # JwtBearerSetup, CurrentUserAccessor (ICurrentUser in Abstractions)
+│  ├─           Observability/             # OpenTelemetry + Serilog enrichers registration
+│  ├─ UniEnroll.Messaging/
+│  ├─           Abstractions/              # EmailMessage, IEmailQueue, IEmailSender, RabbitMqOptions, SendGridOptions
+│  ├─           RabbitMQ/                  # RabbitMQ v7 publisher (queue), consumer helpers (for workers)
+│  ├─ UniEnroll.Worker/
+│  ├─           SendGrid/                  # SendGridEmailSender implementation
+│  ├─           Email/                     # Rabbit consumer → SendGrid sender; console/hosted service
+│  ├─ UniEnroll.Api/                       # Controllers, ProblemDetails/ExceptionHandler, SignalR hubs, DI composition
+│  └─ UniEnroll.DbUp/                      # DbUp migrator console (applies /db scripts)
+│
+
+```
 
 ## Vertical slices with MediatR: 
 Keeps each feature’s commands/queries cohesive and testable; reduces cross-module coupling and aligns via focused files.
