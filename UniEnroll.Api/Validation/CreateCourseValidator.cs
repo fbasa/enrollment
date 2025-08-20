@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Request;
 
 namespace UniEnroll.Api.Validation;
 

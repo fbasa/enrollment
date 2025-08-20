@@ -1,14 +1,16 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Transactions;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Infrastructure.Repositories;
 
 public interface ICoursesRepository
 {
     Task<long> CreateAsync(CreateCourseRequest request, CancellationToken ct);
-    Task<PageResult<CourseDto>> ListAsync(string? search, long? departmentId, int page, int pageSize, CancellationToken ct);
+    Task<PageResult<CourseResponse>> ListAsync(string? search, long? departmentId, int page, int pageSize, CancellationToken ct);
 }
 
 public sealed class CoursesRepository(IDbConnectionFactory db, IDbSession session) : ICoursesRepository
@@ -44,7 +46,7 @@ public sealed class CoursesRepository(IDbConnectionFactory db, IDbSession sessio
         }
     }
 
-    public async Task<PageResult<CourseDto>> ListAsync(string? search, long? departmentId, int page, int pageSize, CancellationToken ct)
+    public async Task<PageResult<CourseResponse>> ListAsync(string? search, long? departmentId, int page, int pageSize, CancellationToken ct)
     {
         await using var conn = await db.CreateOpenConnectionAsync(ct);
 
@@ -77,8 +79,8 @@ public sealed class CoursesRepository(IDbConnectionFactory db, IDbSession sessio
         """;
 
         using var multi = await conn.QueryMultipleAsync(sql, p);
-        var items = (await multi.ReadAsync<CourseDto>()).ToList();
+        var items = (await multi.ReadAsync<CourseResponse>()).ToList();
         var total = await multi.ReadFirstAsync<int>();
-        return new PageResult<CourseDto>(items, total);
+        return new PageResult<CourseResponse>(items, total);
     }
 }

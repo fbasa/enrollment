@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Caching.CacheInvalidator;
 using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Domain.Request;
 
 namespace UniEnroll.Api.Application.Terms.Commands;
 

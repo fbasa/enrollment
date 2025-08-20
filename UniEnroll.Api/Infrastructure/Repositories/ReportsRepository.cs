@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Infrastructure.Repositories;
 

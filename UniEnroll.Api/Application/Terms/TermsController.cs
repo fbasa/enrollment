@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using UniEnroll.Api.Application.Terms.Commands;
 using UniEnroll.Api.Application.Terms.Queries;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Terms;
 
@@ -13,7 +14,7 @@ public sealed class TermsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
     [OutputCache(PolicyName = "terms-list")]
-    public async Task<ActionResult<IReadOnlyList<TermDto>>> Get(CancellationToken ct) 
+    public async Task<ActionResult<IReadOnlyList<TermResponse>>> Get(CancellationToken ct) 
         => Ok(await mediator.Send(new ListTermsQuery(), ct));
 
     [HttpPost]

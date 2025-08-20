@@ -1,15 +1,17 @@
 ﻿using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Transactions;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Infrastructure.Repositories;
 
 public interface IOfferingsRepository
 {
-    Task<PageResult<OfferingListItemDto>> ListAsync(long? termId, long? courseId, int page, int pageSize, CancellationToken ct);
-    Task<OfferingDetailDto?> GetAsync(long id, CancellationToken ct);
+    Task<PageResult<OfferingListItemResponse>> ListAsync(long? termId, long? courseId, int page, int pageSize, CancellationToken ct);
+    Task<OfferingDetailResponse?> GetAsync(long id, CancellationToken ct);
     Task<long> CreateAsync(OfferingUpsertRequest req, CancellationToken ct);
     Task<bool> UpdateAsync(long id, OfferingUpsertRequest req, byte[] rowVersion, CancellationToken ct);
     Task<bool> UpdateCapacityAsync(long id, int capacity, byte[] rowVersion, CancellationToken ct);
@@ -17,7 +19,7 @@ public interface IOfferingsRepository
 
 public sealed class OfferingsRepository(IDbConnectionFactory db, IDbSession session) : IOfferingsRepository
 {
-    public async Task<PageResult<OfferingListItemDto>> ListAsync(long? termId, long? courseId, int page, int pageSize, CancellationToken ct)
+    public async Task<PageResult<OfferingListItemResponse>> ListAsync(long? termId, long? courseId, int page, int pageSize, CancellationToken ct)
     {
         await using var conn = await db.CreateOpenConnectionAsync(ct);
 
@@ -51,12 +53,12 @@ public sealed class OfferingsRepository(IDbConnectionFactory db, IDbSession sess
         """;
 
         using var multi = await conn.QueryMultipleAsync(sql, p);
-        var items = (await multi.ReadAsync<OfferingListItemDto>()).ToList();
+        var items = (await multi.ReadAsync<OfferingListItemResponse>()).ToList();
         var total = await multi.ReadFirstAsync<int>();
-        return new PageResult<OfferingListItemDto>(items, total);
+        return new PageResult<OfferingListItemResponse>(items, total);
     }
 
-    public async Task<OfferingDetailDto?> GetAsync(long id, CancellationToken ct)
+    public async Task<OfferingDetailResponse?> GetAsync(long id, CancellationToken ct)
     {
         await using var conn = await db.CreateOpenConnectionAsync(ct);
 
@@ -81,11 +83,11 @@ public sealed class OfferingsRepository(IDbConnectionFactory db, IDbSession sess
         if (head == null) return null;
 
         var sched = (await multi.ReadAsync()).Select(r =>
-            new ScheduleSlotDto((int)r.dayOfWeek, TimeOnly.FromTimeSpan((TimeSpan)r.startTime), TimeOnly.FromTimeSpan((TimeSpan)r.endTime))
+            new ScheduleSlotResponse((int)r.dayOfWeek, TimeOnly.FromTimeSpan((TimeSpan)r.startTime), TimeOnly.FromTimeSpan((TimeSpan)r.endTime))
         ).ToList();
 
         var etag = Convert.ToBase64String((byte[])head.rowversion);
-        return new OfferingDetailDto(
+        return new OfferingDetailResponse(
             (long)head.offeringId, (string)head.termCode, (string)head.courseCode, (string)head.title,
             (string)head.section, (string)head.roomCode, (int)head.capacity, (int)head.waitlistCapacity, sched, etag);
     }

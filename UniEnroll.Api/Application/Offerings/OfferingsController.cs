@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using UniEnroll.Api.Application.Offerings.Commands;
 using UniEnroll.Api.Application.Offerings.Queries;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Offerings;
 
@@ -15,7 +17,7 @@ namespace UniEnroll.Api.Application.Offerings;
 public sealed class OfferingsController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PageResult<OfferingListItemDto>>> List([FromQuery] long? termId, [FromQuery] long? courseId, CancellationToken ct)
+    public async Task<ActionResult<PageResult<OfferingListItemResponse>>> List([FromQuery] long? termId, [FromQuery] long? courseId, CancellationToken ct)
     {
         var page = Pagination.PageRequest.From(HttpContext, 20, 100);
         var result = await mediator.Send(new ListOfferingsQuery(termId, courseId, page.Page, page.PageSize), ct);
@@ -24,7 +26,7 @@ public sealed class OfferingsController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<OfferingDetailDto>> Get(long id, CancellationToken ct)
+    public async Task<ActionResult<OfferingDetailResponse>> Get(long id, CancellationToken ct)
     {
         var dto = await mediator.Send(new GetOfferingQuery(id), ct);
         if (dto is null) return NotFound();

@@ -1,13 +1,14 @@
 ﻿using MediatR;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Courses.Queries;
 
-public record ListCoursesQuery(string? Search, long? DepartmentId, int Page, int PageSize) : IRequest<PageResult<CourseDto>>;
+public record ListCoursesQuery(string? Search, long? DepartmentId, int Page, int PageSize) : IRequest<PageResult<CourseResponse>>;
 
-public sealed class ListCoursesHandler(ICoursesRepository repo) : IRequestHandler<ListCoursesQuery, PageResult<CourseDto>>
+public sealed class ListCoursesHandler(ICoursesRepository repo) : IRequestHandler<ListCoursesQuery, PageResult<CourseResponse>>
 {
-    public Task<PageResult<CourseDto>> Handle(ListCoursesQuery q, CancellationToken ct) => repo.ListAsync(q.Search, q.DepartmentId, q.Page, q.PageSize, ct);
+    public Task<PageResult<CourseResponse>> Handle(ListCoursesQuery q, CancellationToken ct) => repo.ListAsync(q.Search, q.DepartmentId, q.Page, q.PageSize, ct);
 }
 

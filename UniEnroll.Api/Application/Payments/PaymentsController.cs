@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using UniEnroll.Api.Application.Payments.Commands;
 using UniEnroll.Api.Application.Payments.Queries;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Payments;
 
@@ -18,7 +20,7 @@ public sealed class PaymentsController(IMediator mediator, IConfiguration cfg) :
     private bool PaymentsEnabled => (cfg.GetSection("App").GetValue<bool?>("PaymentsEnabled")).GetValueOrDefault(true);
 
     [HttpGet("invoices")]
-    public async Task<ActionResult<PageResult<InvoiceDto>>> List([FromQuery] long? studentId, [FromQuery] long? termId, CancellationToken ct)
+    public async Task<ActionResult<PageResult<InvoiceResponse>>> List([FromQuery] long? studentId, [FromQuery] long? termId, CancellationToken ct)
     {
         if (!PaymentsEnabled) return Forbid();
         var page = Pagination.PageRequest.From(HttpContext, 20, 100);

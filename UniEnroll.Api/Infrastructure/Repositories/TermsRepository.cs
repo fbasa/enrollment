@@ -1,14 +1,13 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using System.Data;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Infrastructure.Repositories;
 
 public interface ITermsRepository
 {
     Task<long> CreateAsync(CreateTermRequest request, CancellationToken ct);
-    Task<IReadOnlyList<TermDto>> GetAllAsync(CancellationToken ct);
+    Task<IReadOnlyList<TermResponse>> GetAllAsync(CancellationToken ct);
 }
 
 public sealed class TermsRepository(IDbConnectionFactory db) : ITermsRepository
@@ -38,10 +37,10 @@ public sealed class TermsRepository(IDbConnectionFactory db) : ITermsRepository
    
     }
 
-    public async Task<IReadOnlyList<TermDto>> GetAllAsync(CancellationToken ct)
+    public async Task<IReadOnlyList<TermResponse>> GetAllAsync(CancellationToken ct)
     {
         await using var conn = await db.CreateOpenConnectionAsync(ct);
-        var rows = await conn.QueryAsync<TermDto>(SqlTemplates.ListTerms);
+        var rows = await conn.QueryAsync<TermResponse>(SqlTemplates.ListTerms);
         return rows.ToList();
     }
 }

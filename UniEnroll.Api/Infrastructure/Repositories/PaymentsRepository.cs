@@ -1,12 +1,14 @@
 ﻿using Dapper;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Transactions;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Infrastructure.Repositories;
 
 public interface IPaymentsRepository
 {
-    Task<PageResult<InvoiceDto>> ListInvoicesAsync(long? studentId, long? termId, int page, int pageSize, CancellationToken ct);
+    Task<PageResult<InvoiceResponse>> ListInvoicesAsync(long? studentId, long? termId, int page, int pageSize, CancellationToken ct);
     Task<long> CreateInvoiceAsync(CreateInvoiceRequest request, CancellationToken ct);
     Task AddPaymentAsync(long invoiceId, decimal amount, DateTime paidAtUtc, string method, CancellationToken ct);
     Task<IEnumerable<dynamic>> FinanceRowsAsync(long? termId, CancellationToken ct);
@@ -14,14 +16,14 @@ public interface IPaymentsRepository
 
 public sealed class PaymentsRepository(IDbConnectionFactory db, IDbSession session) : IPaymentsRepository
 {
-    public async Task<PageResult<InvoiceDto>> ListInvoicesAsync(long? studentId, long? termId, int page, int pageSize, CancellationToken ct)
+    public async Task<PageResult<InvoiceResponse>> ListInvoicesAsync(long? studentId, long? termId, int page, int pageSize, CancellationToken ct)
     {
         await using var conn = await db.CreateOpenConnectionAsync(ct);
         var p = new DynamicParameters(new { studentId, termId, skip = (page - 1) * pageSize, take = pageSize });
         using var multi = await conn.QueryMultipleAsync(SqlTemplates.ListInvoicesPaged, p);
-        var items = (await multi.ReadAsync<InvoiceDto>()).ToList();
+        var items = (await multi.ReadAsync<InvoiceResponse>()).ToList();
         var total = await multi.ReadFirstAsync<int>();
-        return new PageResult<InvoiceDto>(items, total);
+        return new PageResult<InvoiceResponse>(items, total);
     }
 
     public async Task<long> CreateInvoiceAsync(CreateInvoiceRequest request, CancellationToken ct)

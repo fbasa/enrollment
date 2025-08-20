@@ -2,11 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using UniEnroll.Api.Application.Courses.Commands;
 using UniEnroll.Api.Application.Courses.Queries;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Courses;
 
@@ -16,7 +17,7 @@ namespace UniEnroll.Api.Application.Courses;
 public sealed class CoursesController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PageResult<CourseDto>>> List([FromQuery] string? search, [FromQuery] long? departmentId, CancellationToken ct)
+    public async Task<ActionResult<PageResult<CourseResponse>>> List([FromQuery] string? search, [FromQuery] long? departmentId, CancellationToken ct)
     {
         var page = Pagination.PageRequest.From(HttpContext, 20, 100);
         var result = await mediator.Send(new ListCoursesQuery(search, departmentId, page.Page, page.PageSize), ct);

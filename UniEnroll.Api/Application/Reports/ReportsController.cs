@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using UniEnroll.Api.Application.Reports.Queries;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.DTOs;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Reports;
 

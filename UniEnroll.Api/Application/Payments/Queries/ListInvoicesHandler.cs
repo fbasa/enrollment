@@ -1,14 +1,15 @@
 ﻿using MediatR;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Domain.Common;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Payments.Queries;
 
-public record ListInvoicesQuery(long? StudentId, long? TermId, int Page, int PageSize) : IRequest<PageResult<InvoiceDto>>;
+public record ListInvoicesQuery(long? StudentId, long? TermId, int Page, int PageSize) : IRequest<PageResult<InvoiceResponse>>;
 
 public sealed class ListInvoicesHandler(IPaymentsRepository repo)
-    : IRequestHandler<ListInvoicesQuery, PageResult<InvoiceDto>>
+    : IRequestHandler<ListInvoicesQuery, PageResult<InvoiceResponse>>
 {
-    public Task<PageResult<InvoiceDto>> Handle(ListInvoicesQuery q, CancellationToken ct)
+    public Task<PageResult<InvoiceResponse>> Handle(ListInvoicesQuery q, CancellationToken ct)
         => repo.ListInvoicesAsync(q.StudentId, q.TermId, q.Page, q.PageSize, ct);
 }

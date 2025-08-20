@@ -2,10 +2,11 @@
 using MediatR;
 using UniEnroll.Api.Common;
 using UniEnroll.Api.Common.Idempotency;
-using UniEnroll.Api.DTOs;
 using UniEnroll.Api.Infrastructure.Repositories;
 using UniEnroll.Api.Realtime;
 using UniEnroll.Api.Validation;
+using UniEnroll.Domain.Request;
+using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Enrollments.Commands;
 
