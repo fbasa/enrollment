@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using UniEnroll.Infrastructure.Transactions;
 using UniEnroll.Infrastructure;
-using UniEnroll.Application;
 
-namespace UniEnroll.Api.Common;
+namespace UniEnroll.Application.Common;
 
 public sealed class TransactionBehavior<TRequest, TResponse>(
     IDbConnectionFactory factory,

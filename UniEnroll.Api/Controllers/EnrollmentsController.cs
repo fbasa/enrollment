@@ -3,7 +3,7 @@ using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UniEnroll.Api.Common;
+using UniEnroll.Application.Common;
 using UniEnroll.Application.Handlers.Commands;
 using UniEnroll.Domain.Request;
 using UniEnroll.Infrastructure;

@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace UniEnroll.Api.Common.Idempotency;
+namespace UniEnroll.Application.Common.Idempotency;
 
 
 public sealed class IdempotencyBehavior<TRequest, TResponse>(

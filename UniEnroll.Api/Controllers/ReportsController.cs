@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
-using UniEnroll.Api.Common;
+using UniEnroll.Application.Common;
 using UniEnroll.Application.Handlers.Queries;
 using UniEnroll.Domain.Response;
 

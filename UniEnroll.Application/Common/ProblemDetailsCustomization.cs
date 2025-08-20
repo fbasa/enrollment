@@ -1,4 +1,6 @@
-﻿namespace UniEnroll.Api.Common;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace UniEnroll.Application.Common;
 
 public static class ProblemDetailsCustomization
 {

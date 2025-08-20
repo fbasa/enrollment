@@ -38,8 +38,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniEnroll.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniEnroll.Messaging", "UniEnroll.Messaging\UniEnroll.Messaging.csproj", "{41CB3C1F-C2D3-4404-A46A-8EB79971CB3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniEnroll.Worker", "UniEnroll.Worker\UniEnroll.Worker.csproj", "{2D41DAD9-AE1F-4D27-9952-F294B5AB3827}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,10 +68,6 @@ Global
 		{41CB3C1F-C2D3-4404-A46A-8EB79971CB3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41CB3C1F-C2D3-4404-A46A-8EB79971CB3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41CB3C1F-C2D3-4404-A46A-8EB79971CB3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D41DAD9-AE1F-4D27-9952-F294B5AB3827}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D41DAD9-AE1F-4D27-9952-F294B5AB3827}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D41DAD9-AE1F-4D27-9952-F294B5AB3827}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D41DAD9-AE1F-4D27-9952-F294B5AB3827}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,7 +80,6 @@ Global
 		{E7BFCFA4-7A43-4138-A877-E643F813007D} = {2BD07E9B-3EC2-4FB8-B92F-E3E7E0D8F7AD}
 		{82A6E1AB-C044-474E-A017-DCD463B87BC1} = {2BD07E9B-3EC2-4FB8-B92F-E3E7E0D8F7AD}
 		{41CB3C1F-C2D3-4404-A46A-8EB79971CB3A} = {2BD07E9B-3EC2-4FB8-B92F-E3E7E0D8F7AD}
-		{2D41DAD9-AE1F-4D27-9952-F294B5AB3827} = {2BD07E9B-3EC2-4FB8-B92F-E3E7E0D8F7AD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9B9A77D9-49B7-471F-AEC2-951D16C3405C}

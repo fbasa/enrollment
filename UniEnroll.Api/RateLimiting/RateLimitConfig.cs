@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-using UniEnroll.Api.Common;
+using UniEnroll.Application;
+using UniEnroll.Application.Common;
 using UniEnroll.Application.Errors;
 
 namespace UniEnroll.Api.RateLimiting;

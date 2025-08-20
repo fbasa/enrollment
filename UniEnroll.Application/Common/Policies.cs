@@ -1,4 +1,4 @@
-﻿namespace UniEnroll.Api.Common;
+﻿namespace UniEnroll.Application.Common;
 
 public static class Policies
 {

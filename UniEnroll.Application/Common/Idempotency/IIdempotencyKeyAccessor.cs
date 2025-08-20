@@ -1,4 +1,4 @@
-﻿namespace UniEnroll.Api.Common.Idempotency;
+﻿namespace UniEnroll.Application.Common.Idempotency;
 
 public interface IIdempotencyKeyAccessor
 {

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
 
-namespace UniEnroll.Api.Common;
+namespace UniEnroll.Application.Common;
 
 public static class ProblemDetailsExtensions
 {

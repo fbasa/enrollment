@@ -1,6 +1,7 @@
-﻿using Serilog.Context;
+﻿using Microsoft.AspNetCore.Http;
+using Serilog.Context;
 
-namespace UniEnroll.Api.Common;
+namespace UniEnroll.Application.Common;
 
 public sealed class SerilogHttpEnricherMiddleware(RequestDelegate next)
 {

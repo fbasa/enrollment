@@ -12,11 +12,10 @@ using Serilog.Events;
 using StackExchange.Redis;
 using System.Text;
 using System.Threading.Channels;
-using UniEnroll.Api.Application.Common;
 using UniEnroll.Api.Auth;
 using UniEnroll.Api.Caching;
-using UniEnroll.Api.Common;
-using UniEnroll.Api.Common.Idempotency;
+using UniEnroll.Application.Common;
+using UniEnroll.Application.Common.Idempotency;
 using UniEnroll.Api.Mapping;
 using UniEnroll.Api.RateLimiting;
 using UniEnroll.Api.Realtime;
@@ -33,6 +32,7 @@ using UniEnroll.Infrastructure.Transactions;
 using UniEnroll.Messaging.Abstractions;
 using UniEnroll.Messaging.RabbitMQ;
 using UniEnroll.Messaging.SendGrid;
+using UniEnroll.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 

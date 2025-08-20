@@ -1,6 +1,7 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-namespace UniEnroll.Api.Common.Idempotency;
+namespace UniEnroll.Application.Common.Idempotency;
 
 public sealed class HttpIdempotencyKeyAccessor(IHttpContextAccessor http) : IIdempotencyKeyAccessor
 {

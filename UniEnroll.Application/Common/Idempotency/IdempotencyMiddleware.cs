@@ -1,4 +1,7 @@
-﻿namespace UniEnroll.Api.Common.Idempotency;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+
+namespace UniEnroll.Application.Common.Idempotency;
 
 public sealed class IdempotencyMiddleware(RequestDelegate next, ILogger<IdempotencyMiddleware> log)
 {

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 
-namespace UniEnroll.Api.Common;
+namespace UniEnroll.Application.Common;
 
 public static class Pagination
 {
