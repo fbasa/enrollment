@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\UniEnroll.Application\UniEnroll.Application.csproj" />
     <ProjectReference Include="..\UniEnroll.Domain\UniEnroll.Domain.csproj" />
     <ProjectReference Include="..\UniEnroll.Infrastructure\UniEnroll.Infrastructure.csproj" />
     <ProjectReference Include="..\UniEnroll.Messaging\UniEnroll.Messaging.csproj" />

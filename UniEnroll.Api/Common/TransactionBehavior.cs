@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using UniEnroll.Infrastructure.Transactions;
 using UniEnroll.Infrastructure;
+using UniEnroll.Application;
 
 namespace UniEnroll.Api.Common;
 
