@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using UniEnroll.Api.Common;
 using UniEnroll.Api.Errors;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 
 namespace UniEnroll.Api.Application.Enrollments.Commands;
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using UniEnroll.Api.Common;
 using UniEnroll.Api.Errors;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Api.Security;
 using UniEnroll.Domain.Response;
 

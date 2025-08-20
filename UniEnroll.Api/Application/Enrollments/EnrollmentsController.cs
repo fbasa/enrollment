@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniEnroll.Api.Application.Enrollments.Commands;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.Infrastructure;
 using UniEnroll.Domain.Request;
+using UniEnroll.Infrastructure;
 
 namespace UniEnroll.Api.Application.Enrollments;
 

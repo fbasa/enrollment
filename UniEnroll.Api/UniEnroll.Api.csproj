@@ -33,6 +33,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\UniEnroll.Domain\UniEnroll.Domain.csproj" />
+    <ProjectReference Include="..\UniEnroll.Infrastructure\UniEnroll.Infrastructure.csproj" />
+    <ProjectReference Include="..\UniEnroll.Messaging\UniEnroll.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

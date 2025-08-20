@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using UniEnroll.Api.Caching;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Domain.Common;
 using UniEnroll.Domain.Response;
 

@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using UniEnroll.Api.Common;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Api.Caching.CacheInvalidator;
 using UniEnroll.Api.Validation;
 using UniEnroll.Domain.Request;

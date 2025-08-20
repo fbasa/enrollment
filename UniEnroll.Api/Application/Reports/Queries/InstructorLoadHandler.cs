@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Domain.Response;
 
 namespace UniEnroll.Api.Application.Reports.Queries;

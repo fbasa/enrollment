@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Dapper;
-using Microsoft.AspNetCore.Http;
-using UniEnroll.Api.Infrastructure;
+using UniEnroll.Infrastructure;
 
 namespace UniEnroll.Api.Security;
 

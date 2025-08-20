@@ -18,16 +18,20 @@ using UniEnroll.Api.Caching;
 using UniEnroll.Api.Common;
 using UniEnroll.Api.Common.Idempotency;
 using UniEnroll.Api.Errors;
-using UniEnroll.Api.Infrastructure;
-using UniEnroll.Api.Infrastructure.Repositories;
-using UniEnroll.Api.Infrastructure.Transactions;
+using UniEnroll.Infrastructure;
+using UniEnroll.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Transactions;
 using UniEnroll.Api.Mapping;
-using UniEnroll.Api.Messaging;
-using UniEnroll.Api.Observability;
+using UniEnroll.Messaging;
 using UniEnroll.Api.RateLimiting;
 using UniEnroll.Api.Realtime;
 using UniEnroll.Api.Security;
 using UniEnroll.Api.Versioning;
+using UniEnroll.Messaging.Abstractions;
+using UniEnroll.Messaging.SendGrid;
+using UniEnroll.Messaging.RabbitMQ;
+using UniEnroll.Domain.Common;
+using UniEnroll.Infrastructure.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 

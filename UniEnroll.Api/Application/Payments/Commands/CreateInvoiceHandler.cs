@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using UniEnroll.Api.Common;
 using UniEnroll.Api.Common.Idempotency;
-using UniEnroll.Api.Infrastructure.Repositories;
+using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Domain.Request;
 
 namespace UniEnroll.Api.Application.Payments.Commands;
