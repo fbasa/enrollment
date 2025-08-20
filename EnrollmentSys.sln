@@ -9,8 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ops", "ops", "{C38CEE7D-D40
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
 		docker-compose.yml = docker-compose.yml
-		Dockerfile.api = Dockerfile.api
-		Dockerfile.web = Dockerfile.web
+		docker-api.yml = docker-api.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "db", "db", "{B0BE6FB3-6B80-4229-A997-2558BE18EE6E}"
