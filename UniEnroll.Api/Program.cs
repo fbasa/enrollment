@@ -82,7 +82,7 @@ builder.Services.AddSingleton(sp => new MapperConfiguration(config =>
 
 
 // DB factory (per-request scope)
-builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
 
 // Repositories
 builder.Services.AddScoped<ITermsRepository, TermsRepository>();
@@ -95,7 +95,7 @@ builder.Services.AddSingleton<IEmailOutboxRepository, EmailOutboxRepository>();
 
 // MediatR + Validators + Mapping
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<Program>());
+    cfg.RegisterServicesFromAssemblyContaining<ITransactionalRequest>());
 
 // MediatR validation pipeline
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -109,8 +109,6 @@ builder.Services.AddSingleton<IIdempotencyKeyAccessor, HttpIdempotencyKeyAccesso
 
 // Ambient DB session (scoped per request)
 builder.Services.AddScoped<IDbSession, DbSession>();
-
-//builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
 
 // Observability
 builder.Services.AddOpenTelemetry()
@@ -179,10 +177,9 @@ if (!string.IsNullOrWhiteSpace(redisCs))
         o.InstanceName = "unienroll:";
     });
 }
-else
-{
-    builder.Services.AddMemoryCache();
-}
+
+// fallback to memory cached
+builder.Services.AddMemoryCache();
 
 // Email messaging Queue using RabbitMQ + SendGrid
 builder.Services.Configure<RabbitMqOptions>(config.GetSection("RabbitMq"));

@@ -3,8 +3,7 @@
 using DbUp;
 
 
-var conn = Environment.GetEnvironmentVariable("DB_CONNECTION")
-          ?? "Server=LAPTOP-T2AEOQQQ;Database=UniEnroll;Integrated Security=True;TrustServerCertificate=True;";
+var conn = Environment.GetEnvironmentVariable("DB_CONNECTION");
 
 EnsureDatabase.For.SqlDatabase(conn);
 
