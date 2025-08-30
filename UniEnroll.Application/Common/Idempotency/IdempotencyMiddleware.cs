@@ -24,6 +24,7 @@ public sealed class IdempotencyMiddleware(RequestDelegate next, ILogger<Idempote
             }
         }
 
-        await next(ctx); // Actual idempotency handled by MediatR behavior
+        // Actual idempotency handled by MediatR behavior ==> UniEnroll.Application.Common.Idempotency.IdempotencyBehavior
+        await next(ctx);
     }
 }

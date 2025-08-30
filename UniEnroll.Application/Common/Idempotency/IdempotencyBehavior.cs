@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,6 +9,8 @@ using StackExchange.Redis;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using UniEnroll.Application.Errors;
+
 
 namespace UniEnroll.Application.Common.Idempotency;
 
@@ -15,6 +19,7 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
     IDistributedCache cache,
     IServiceProvider sp,
     IIdempotencyKeyAccessor keyAccessor,
+    IHttpContextAccessor http,
     ILogger<IdempotencyBehavior<TRequest, TResponse>> log,
     IOptions<IdempotencyOptions> opts) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -34,7 +39,12 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
         if (string.IsNullOrWhiteSpace(headerKey))
         {
             log.LogDebug("IdempotencyBehavior skipped: missing header.");
-            return await next();
+            var ctx = http.HttpContext!;
+            throw new ProblemDetailsException(StatusCodes.Status400BadRequest,
+                               $"Missing X-Idempotency-Key",
+                               $"This operation requires X-Idempotency-Key. Provide a unique key per retry.");
+
+
         }
 
         // Build a stable request hash (based on TRequest serialization)

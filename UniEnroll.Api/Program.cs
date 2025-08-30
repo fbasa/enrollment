@@ -64,10 +64,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       };
   });
 
+// Add policies that require our custom requirements
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy(Policies.CapacityOverride, p => p.RequireRole(Roles.Admin, Roles.Registrar));
     opt.AddPolicy(Policies.PrereqWaiver, p => p.RequireRole(Roles.Admin, Roles.Registrar));
+
+    //optional
+    //opt.AddPolicy(Policies.CapacityOverride, p => p.Requirements.Add(new CapacityOverrideRequirement()));
+    //opt.AddPolicy(Policies.PrereqWaiver, p => p.Requirements.Add(new PrereqWaiverRequirement()));
+
 });
 
 // Dapper defaults
@@ -82,26 +88,24 @@ builder.Services.AddSingleton(sp => new MapperConfiguration(config =>
 
 
 // DB factory (per-request scope)
-builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
-
-// Repositories
-builder.Services.AddScoped<ITermsRepository, TermsRepository>();
-builder.Services.AddScoped<ICoursesRepository, CoursesRepository>();
-builder.Services.AddScoped<IOfferingsRepository, OfferingsRepository>();
-builder.Services.AddScoped<IEnrollmentsRepository, EnrollmentsRepository>();
-builder.Services.AddScoped<IReportsRepository, ReportsRepository>();
-builder.Services.AddScoped<IPaymentsRepository, PaymentsRepository>();
-builder.Services.AddSingleton<IEmailOutboxRepository, EmailOutboxRepository>();
+builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>()
+        // Repositories
+        .AddScoped<ITermsRepository, TermsRepository>()
+        .AddScoped<ICoursesRepository, CoursesRepository>()
+        .AddScoped<IOfferingsRepository, OfferingsRepository>()
+        .AddScoped<IEnrollmentsRepository, EnrollmentsRepository>()
+        .AddScoped<IReportsRepository, ReportsRepository>()
+        .AddScoped<IPaymentsRepository, PaymentsRepository>()
+        .AddSingleton<IEmailOutboxRepository, EmailOutboxRepository>();
 
 // MediatR + Validators + Mapping
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<ITransactionalRequest>());
-
-// MediatR validation pipeline
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCacheBehavior<,>));
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(IdempotencyBehavior<,>));
+    cfg.RegisterServicesFromAssemblyContaining<ITransactionalRequest>())
+    // MediatR pipelines
+    .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+    .AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>))
+    .AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCacheBehavior<,>))
+    .AddTransient(typeof(IPipelineBehavior<,>), typeof(IdempotencyBehavior<,>));
 
 // 1) Options + accessor
 builder.Services.Configure<IdempotencyOptions>(config.GetSection("Idempotency"));
@@ -128,15 +132,6 @@ builder.Services.AddControllers()
 
 // API versioning
 builder.Services.AddApiVersioningV1();
-
-// Add policies that require our custom requirements
-builder.Services.AddAuthorization(o =>
-{
-    o.AddPolicy(Policies.CapacityOverride, p =>
-        p.Requirements.Add(new CapacityOverrideRequirement()));
-    o.AddPolicy(Policies.PrereqWaiver, p =>
-        p.Requirements.Add(new PrereqWaiverRequirement()));
-});
 
 // Register handlers (they check Admin/Registrar roles)
 builder.Services.AddSingleton<IAuthorizationHandler, CapacityOverrideHandler>();
@@ -210,8 +205,8 @@ else
 }
 
 // Outbox + dispatcher 
-builder.Services.AddHostedService<RabbitConsumer>();
-builder.Services.AddHostedService<OutboxDispatcher>();
+//builder.Services.AddHostedService<RabbitConsumer>();
+//builder.Services.AddHostedService<OutboxDispatcher>();
 
 
 // Output cache
@@ -270,7 +265,6 @@ app.UseExceptionHandler(_ => { }); // minimal; AddProblemDetails handles mapping
 
 // Correlation + Idempotency
 app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseMiddleware<IdempotencyMiddleware>();
 
 //Serilog
 app.UseMiddleware<SerilogHttpEnricherMiddleware>(); // push context into Serilog

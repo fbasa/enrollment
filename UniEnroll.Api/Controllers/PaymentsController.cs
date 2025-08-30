@@ -14,7 +14,7 @@ namespace UniEnroll.Api.Controllers;
 [ApiController]
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}")]
-[Authorize(Roles = Roles.Admin + "," + Roles.Registrar)]
+//[Authorize(Roles = Roles.Admin + "," + Roles.Registrar)]
 public sealed class PaymentsController(IMediator mediator, IConfiguration cfg) : ControllerBase
 {
     private bool PaymentsEnabled => cfg.GetSection("App").GetValue<bool?>("PaymentsEnabled").GetValueOrDefault(true);

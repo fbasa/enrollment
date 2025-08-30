@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using UniEnroll.Infrastructure.Repositories;
 using UniEnroll.Domain.Request;
+using UniEnroll.Application.Common.Idempotency;
 
 namespace UniEnroll.Application.Handlers.Commands;
 

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using UniEnroll.Application.Common.Idempotency;
 using UniEnroll.Application.Validators;
 using UniEnroll.Domain.Request;
 using UniEnroll.Domain.Response;
