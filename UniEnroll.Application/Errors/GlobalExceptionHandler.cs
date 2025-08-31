@@ -7,14 +7,6 @@ using System.Text.Json;
 
 namespace UniEnroll.Application.Errors;
 
-public sealed class ProblemDetailsException : Exception
-{
-    public int Status { get; }
-    public string? Detail { get; }
-    public ProblemDetailsException(int status, string title, string? detail = null)
-        : base(title) { Status = status; Detail = detail; }
-}
-
 public sealed class GlobalExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext http, Exception ex, CancellationToken ct)
@@ -25,6 +17,24 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
 
         ProblemDetails problem = ex switch
         {
+            IdempotencyKeyConflictException idem => new ProblemDetails
+            {
+                Title = idem.Message,
+                Status = idem.Status,
+                Type = $"https://errors.example/{idem.Code}",
+                Detail = idem.InnerException?.Message,
+                Instance = http.Request.Path
+            },
+
+            IdempotencyKeyMissingException idem => new ProblemDetails
+            {
+                Title = idem.Message,
+                Status = idem.Status,
+                Type = $"https://errors.example/{idem.Code}",
+                Detail = idem.InnerException?.Message,
+                Instance = http.Request.Path
+            },
+
             ValidationException fv => new ProblemDetails
             {
                 Title = "Validation failed",

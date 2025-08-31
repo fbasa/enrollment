@@ -13,4 +13,7 @@ public static class ErrorCodes
     public const string TransientDbError = "transient_db_error";
     public const string DatabaseUnavailable = "database_unavailable";
     public const string Unknown = "unknown_error";
+
+    public const string IdempotencyKeyConflict = "idempotency_key_conflict";
+    public const string IdempotencyKeyMissing = "idempotency_key_missing";
 }

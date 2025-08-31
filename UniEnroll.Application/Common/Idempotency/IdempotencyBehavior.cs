@@ -39,12 +39,7 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
         if (string.IsNullOrWhiteSpace(headerKey))
         {
             log.LogDebug("IdempotencyBehavior skipped: missing header.");
-            var ctx = http.HttpContext!;
-            throw new ProblemDetailsException(StatusCodes.Status400BadRequest,
-                               $"Missing X-Idempotency-Key",
-                               $"This operation requires X-Idempotency-Key. Provide a unique key per retry.");
-
-
+            throw new IdempotencyKeyMissingException();
         }
 
         // Build a stable request hash (based on TRequest serialization)
@@ -86,7 +81,7 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
                         return JsonSerializer.Deserialize<TResponse>(c2, JsonOpts)!;
                 }
                 // Still nothing: treat as conflict-in-progress
-                throw new InvalidOperationException("Duplicate request in progress for the same idempotency key.");
+                throw new IdempotencyKeyConflictException();
             }
 
             try
