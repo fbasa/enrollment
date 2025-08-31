@@ -17,9 +17,8 @@ namespace UniEnroll.Application.Common.Idempotency;
 
 public sealed class IdempotencyBehavior<TRequest, TResponse>(
     IDistributedCache cache,
-    IServiceProvider sp,
+    IConnectionMultiplexer mux,
     IIdempotencyKeyAccessor keyAccessor,
-    IHttpContextAccessor http,
     ILogger<IdempotencyBehavior<TRequest, TResponse>> log,
     IOptions<IdempotencyOptions> opts) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -60,7 +59,6 @@ public sealed class IdempotencyBehavior<TRequest, TResponse>(
         }
 
         // Try to acquire a Redis lock if a multiplexer is available
-        var mux = sp.GetService<IConnectionMultiplexer>();
         if (mux is not null)
         {
             var db = mux.GetDatabase();

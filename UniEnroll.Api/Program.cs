@@ -3,6 +3,8 @@ using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -14,13 +16,14 @@ using System.Text;
 using System.Threading.Channels;
 using UniEnroll.Api.Auth;
 using UniEnroll.Api.Caching;
-using UniEnroll.Application.Common;
-using UniEnroll.Application.Common.Idempotency;
 using UniEnroll.Api.Mapping;
 using UniEnroll.Api.RateLimiting;
 using UniEnroll.Api.Realtime;
 using UniEnroll.Api.Versioning;
+using UniEnroll.Application;
 using UniEnroll.Application.Caching;
+using UniEnroll.Application.Common;
+using UniEnroll.Application.Common.Idempotency;
 using UniEnroll.Application.Errors;
 using UniEnroll.Application.Handlers.Commands;
 using UniEnroll.Application.Security;
@@ -32,7 +35,6 @@ using UniEnroll.Infrastructure.Transactions;
 using UniEnroll.Messaging.Abstractions;
 using UniEnroll.Messaging.RabbitMQ;
 using UniEnroll.Messaging.SendGrid;
-using UniEnroll.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -165,11 +167,21 @@ if (corsOrigins?.Length > 0)
 var redisCs = config.GetConnectionString("Redis");
 if (!string.IsNullOrWhiteSpace(redisCs))
 {
-    builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisCs));
-    builder.Services.AddStackExchangeRedisCache(o =>
+    builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     {
-        o.ConnectionMultiplexerFactory = async () => await ConnectionMultiplexer.ConnectAsync(redisCs);
-        o.InstanceName = "unienroll:";
+        var cfg = ConfigurationOptions.Parse(redisCs,true);
+        cfg.AbortOnConnectFail = false;
+        cfg.ConnectRetry = 3;
+        cfg.SyncTimeout = 5000;
+        return ConnectionMultiplexer.Connect(cfg);
+    }).AddSingleton<IDistributedCache>(sp =>
+    {
+        return new RedisCache(new RedisCacheOptions
+        {
+            // Reuse the existing multiplexer instead of creating a new one
+            ConnectionMultiplexerFactory = () => Task.FromResult(sp.GetRequiredService<IConnectionMultiplexer>()),
+            InstanceName = "unienroll:" // key prefix
+        });
     });
 }
 
