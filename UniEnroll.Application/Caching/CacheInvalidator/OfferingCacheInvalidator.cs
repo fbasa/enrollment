@@ -6,8 +6,7 @@ namespace UniEnroll.Application.Caching.CacheInvalidator;
 
 public record OfferingChanged(long OfferingId) : INotification;
 
-public sealed class OfferingCacheInvalidator(IDistributedCache dist, IMemoryCache mem)
-  : INotificationHandler<OfferingChanged>
+public sealed class OfferingCacheInvalidator(IDistributedCache dist, IMemoryCache mem) : INotificationHandler<OfferingChanged>
 {
     public async Task Handle(OfferingChanged n, CancellationToken ct)
     {
@@ -15,8 +14,11 @@ public sealed class OfferingCacheInvalidator(IDistributedCache dist, IMemoryCach
         var key = $"offerings:detail:{n.OfferingId}";
         if (dist is not null)
         {
-            await dist.RemoveAsync(key, ct); 
+            await dist.RemoveAsync(key, ct);
         }
-        mem.Remove(key);
+        else
+        {
+            mem.Remove(key);
+        }
     }
 }

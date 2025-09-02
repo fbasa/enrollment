@@ -217,8 +217,8 @@ else
 }
 
 // Outbox + dispatcher 
-//builder.Services.AddHostedService<RabbitConsumer>();
-//builder.Services.AddHostedService<OutboxDispatcher>();
+builder.Services.AddHostedService<RabbitConsumer>();
+builder.Services.AddHostedService<OutboxDispatcher>();
 
 
 // Output cache
